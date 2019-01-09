@@ -1,0 +1,13 @@
+{
+  "COFFEE": [
+    ["Raf", "10"],
+    ["Latte", "14"],
+    ["Espresso", "17"],
+    ["Americano", "19"]
+  ],
+  "INGREDIENTS": [
+    ["Sugar", "0.2"],
+    ["Cream", "0.5"],
+    ["Milk", "0.7"]
+  ]
+}
