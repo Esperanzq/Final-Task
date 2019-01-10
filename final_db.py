@@ -44,7 +44,7 @@ class DataBaseWorkaround(object):
     def fill_table_employees(self, user_info):
         """ filling table employees"""
         if not self.employee_exist(user_info):
-            self.cursor.execute('''INSERT INTO employeees VALUES (?,?)''', user_info)
+            self.cursor.execute('''INSERT INTO employees VALUES (?,?)''', user_info)
             self.conn.commit()
 
     def check_if_employee_in_db(self, user_info):
