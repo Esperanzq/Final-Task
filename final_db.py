@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import contextlib
+import sqlite3
 
 try:
     from final_products import Products
@@ -9,7 +10,6 @@ except ImportError as err:
     print ("{}. Check if file exists.".format(err))
 
 try:
-    import sqlite3
     from tabulate import tabulate
 except ImportError as err:
     logger.error("Import error {}.Use command -'pip install requirements.txt'".format(err))
