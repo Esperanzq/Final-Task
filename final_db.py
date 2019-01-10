@@ -10,7 +10,6 @@ except ImportError as err:
 
 try:
     from prettytable import PrettyTable
-    from tabulate import tabulate
 except ImportError as err:
     logger.error("Import error {}.Use command -'pip install requirements.txt'".format(err))
 
@@ -83,14 +82,14 @@ class DataBaseWorkaround(object):
             query = 'INSERT INTO coffeetypes VALUES (?, ?)'
             param = coffeetypes
             result = self.run_query(query, param)
-            logger.info('Coffetypes {} added.'.format('was not' if result else 'was'))
+            logger.info('Coffetype {} added.'.format('was not' if result else 'was'))
 
     def check_if_coffee_types_in_db(self, coffeetypes):
         coffee, price = coffeetypes
         query = 'SELECT * FROM coffeetypes WHERE product = ? AND price = ?'
         param = coffee, price,
         result = self.run_query(query, param)
-        logger.info('Coffetypes {} existed.'.format('were' if result else 'were not'))
+        logger.info('Coffetype {}.'.format('exists' if result else 'does not exist'))
         return bool(result)
 
     def fill_table_ingredients(self, ingredients):
@@ -98,14 +97,14 @@ class DataBaseWorkaround(object):
             query = 'INSERT INTO ingredients VALUES(?, ?)'
             param = ingredients
             result = self.run_query(query, param)
-            logger.info('Ingredients {} added.'.format('were not' if result else 'were'))
+            logger.info('Ingredient {} added.'.format('was not' if result else 'was'))
 
     def check_ingredients_in_db(self, ingredients):
         ingredient, price = ingredients
         query = 'SELECT * FROM ingredients WHERE product = ? AND price = ?'
         param = ingredient, price,
         result = self.run_query(query, param)
-        logger.info('Ingredients {} existed.'.format('were' if result else 'were not'))
+        logger.info('Ingredients {}.'.format('exists' if result else 'does not exist'))
         return bool(result)
 
     def fill_table_sales(self, user_info):
@@ -114,14 +113,14 @@ class DataBaseWorkaround(object):
             query = 'INSERT INTO sales VALUES (?,?,?)'
             param = name, 0, 0,
             result = self.run_query(query, param)
-            logger.info('Values {} added.'.format('were not' if result else 'were'))
+            logger.info('Salesman`s values {} added.'.format('were not' if result else 'were'))
 
     def check_if_salesman_in_db(self, user_info):
         name, position = user_info
         query = 'SELECT * FROM sales WHERE \"Seller name\" = ?'
         param = name,
         result = self.run_query(query, param)
-        logger.info('User {} existed.'.format('was' if result else 'was not'))
+        logger.info('User {}.'.format('exists' if result else 'does not exist'))
         return bool(result)
 
     def update_table_sales(self, name, order_list):
@@ -148,12 +147,6 @@ class DataBaseWorkaround(object):
             print ('User {} as {} was successfully added!'.format(user_info[0], user_info[1]))
             logger.info('User {} position: {} was successfully added to db!'.format(user_info[0], user_info[1]))
 
-    def look_sales_results(self, position):
-        if position == "manager":
-            self.cursor.execute('''SELECT * FROM sales''')
-            columns = ['Seller name', 'Number of sales', 'Total value(BYN)']
-            print (tabulate(self.cursor.fetchall(), headers=columns, tablefmt="pipe", ) + '\n')
-
     @property
     def coffee_types_menu(self):
         query = 'SELECT ROWID,* FROM coffeetypes'
@@ -173,14 +166,18 @@ class DataBaseWorkaround(object):
     def show_coffee_types_menu(self):
         sourse = self.coffee_types_menu
         menu_ = [coffee.product_info() for coffee in sourse]
-        columns = ['ID', 'COFFEE TYPES', 'PRICE']
-        return tabulate(menu_, headers=columns, tablefmt="pipe", )
+        t = PrettyTable(['ID', 'COFFEE TYPES', 'PRICE'])
+        for number, ctype, price in menu_:
+            t.add_row([number, ctype, price])
+        return t
 
     def show_ingredients_menu(self):
         sourse = self.ingredients_menu
         menu_ = [ingredient.product_info() for ingredient in sourse]
-        columns = ['ID', 'INGREDIENT', 'PRICE']
-        return tabulate(menu_, headers=columns, tablefmt="pipe", )
+        t = PrettyTable(['ID', 'INGREDIENT', 'PRICE'])
+        for number, ingr, price in menu_:
+            t.add_row([number, ingr, price])
+        return t
 
     def coffee_dict(self):
         return {str(coffee.rowid): coffee for coffee in self.coffee_types_menu}
