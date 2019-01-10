@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
+
 try:
     import final_parser as pars
     from final_logger import logger
     from final_db import connect as db
-    from datetime import datetime
 except ImportError as err:
     print ("{}. Check if file exists.".format(err))
 
