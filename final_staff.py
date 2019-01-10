@@ -158,7 +158,7 @@ class Salesman(Staff):
         return self.bill_request(self.order_list)
 
     def bill_request(self, order_list):
-        print("Printing bill...")
+        print("Printing bill...\n")
         self.save_the_sales_details_into_file(order_list)
         self.order_list = []
         print ("Exiting to salesman menu...\n")
