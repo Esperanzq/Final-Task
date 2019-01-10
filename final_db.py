@@ -9,6 +9,7 @@ except ImportError as err:
     print ("{}. Check if file exists.".format(err))
 
 try:
+    from prettytable import PrettyTable
     from tabulate import tabulate
 except ImportError as err:
     logger.error("Import error {}.Use command -'pip install requirements.txt'".format(err))
@@ -26,7 +27,8 @@ class DataBaseWorkaround(object):
         self.cursor = self.conn.cursor()
 
     def run_query(self, query, param=None):
-        logger.info('Execute query: {}, {}'.format(query, param) if param else 'Execute query: {}'.format(query))
+        msg = 'Execute query: {}, {}'.format(query, param) if param else 'Execute query: {}'.format(query)
+        logger.info(msg)
         with self.conn:
             if param:
                 self.cursor.execute(query, param)
@@ -110,7 +112,7 @@ class DataBaseWorkaround(object):
         name, position = user_info
         if not self.check_if_salesman_in_db(user_info) and position == 'salesman':
             query = 'INSERT INTO sales VALUES (?,?,?)'
-            param = (name, 0, 0,)
+            param = name, 0, 0,
             result = self.run_query(query, param)
             logger.info('Values {} added.'.format('were not' if result else 'were'))
 
@@ -186,12 +188,31 @@ class DataBaseWorkaround(object):
     def ingredient_dict(self):
         return {str(ingredient.rowid): ingredient for ingredient in self.ingredients_menu}
 
+    def show_total_sales(self):
+        query = 'SELECT SUM(\"Number of sales\") FROM sales'
+        self.cursor.execute(query)
+        logger.info('Execute query: {}'.format(query))
+        result = self.cursor.fetchone()
+        for element in result:
+            return element
+
+    def show_total_profit(self):
+        query = 'SELECT SUM(\"Total value (BYN)\") FROM sales'
+        self.cursor.execute(query)
+        logger.info('Execute query: {}'.format(query))
+        result = self.cursor.fetchone()
+        for element in result:
+            return element
+
     def show_statistic(self):
         query = 'SELECT * FROM sales'
         self.cursor.execute(query)
         logger.info('Execute query: {}'.format(query))
-        columns = ['Seller name', 'Number of sales', 'Total value(BYN)']
-        print (tabulate(self.cursor.fetchall(), headers=columns, tablefmt="pipe", ) + '\n')
+        t = PrettyTable(['Seller name', 'Number of sales', 'Total value(BYN)'])
+        for name, sales, value in self.cursor.fetchall():
+            t.add_row([name, sales, value])
+        t.add_row(['Total:', self.show_total_sales(), self.show_total_profit()])
+        print (t)
 
     @staticmethod
     def get_overall_price(order):
