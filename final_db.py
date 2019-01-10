@@ -26,8 +26,7 @@ class DataBaseWorkaround(object):
         self.cursor = self.conn.cursor()
 
     def run_query(self, query, param=None):
-        msg = 'Execute query: {}, {}'.format(query, param) if param else 'Execute query: {}'.format(query)
-        logger.info(msg)
+        logger.info('Execute query: {}, {}'.format(query, param) if param else 'Execute query: {}'.format(query))
         with self.conn:
             if param:
                 self.cursor.execute(query, param)
