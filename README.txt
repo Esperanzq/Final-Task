@@ -4,7 +4,7 @@ Arguments of the utility are entered through the command line, also it is possib
 You can start script with entering name and position:
     '-n' or '--name' - Is used to set the name of the user.
     '-p' or '--position' - Is used to set the position of the user.
-Or you can enter them, when script ask you about it.
+Or you can start script and enter them, when script ask you about it.
 
 Script is capable of:
 1. Saving the bill into a txt file. Each time new. 
