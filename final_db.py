@@ -69,7 +69,7 @@ class DataBaseWorkaround(object):
     def check_if_employee_in_db(self, user_info):
         position, name = user_info
         query = 'SELECT * FROM employees WHERE position = ? AND name = ?'
-        param = (position, name,)
+        param = position, name,
         result = self.run_query(query, param)
         logger.info('User << {} >> position << {} >> {}.'.format(user_info[0], user_info[1],
                                                                  'exists' if result else 'does not exist'))
@@ -86,7 +86,7 @@ class DataBaseWorkaround(object):
     def check_if_coffee_types_in_db(self, coffeetypes):
         coffee, price = coffeetypes
         query = 'SELECT * FROM coffeetypes WHERE product = ? AND price = ?'
-        param = (coffee, price,)
+        param = coffee, price,
         result = self.run_query(query, param)
         logger.info('Coffetypes {} existed.'.format('were' if result else 'were not'))
         return bool(result)
@@ -101,7 +101,7 @@ class DataBaseWorkaround(object):
     def check_ingredients_in_db(self, ingredients):
         ingredient, price = ingredients
         query = 'SELECT * FROM ingredients WHERE product = ? AND price = ?'
-        param = (ingredient, price,)
+        param = ingredient, price,
         result = self.run_query(query, param)
         logger.info('Ingredients {} existed.'.format('were' if result else 'were not'))
         return bool(result)
@@ -117,7 +117,7 @@ class DataBaseWorkaround(object):
     def check_if_salesman_in_db(self, user_info):
         name, position = user_info
         query = 'SELECT * FROM sales WHERE \"Seller name\" = ?'
-        param = (name,)
+        param = name,
         result = self.run_query(query, param)
         logger.info('User {} existed.'.format('was' if result else 'was not'))
         return bool(result)
@@ -125,14 +125,14 @@ class DataBaseWorkaround(object):
     def update_table_sales(self, name, order_list):
         price = self.get_overall_price(order_list)
         query = 'SELECT \"Number of sales\", \"Total value (BYN)\" FROM sales WHERE \"Seller name\" = ?'
-        param = (name,)
+        param = name,
         self.cursor.execute(query, param)
         logger.info('Execute query: {}, {}'.format(query, param))
         number_of_sales, total_value = self.cursor.fetchone()
         number_of_sales += 1
         total_value += price
         query2 = 'UPDATE sales SET \"Number of sales\" = ?, \"Total value (BYN)\" = ? WHERE \"Seller name\" = ? '
-        param2 = (number_of_sales, total_value, name,)
+        param2 = number_of_sales, total_value, name,
         self.cursor.execute(query2, param2)
         logger.info('Execute query: {}, {}'.format(query, param2))
         self.conn.commit()
