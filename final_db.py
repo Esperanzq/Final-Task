@@ -89,14 +89,14 @@ class DataBaseWorkaround(object):
             query = 'INSERT INTO coffeetypes VALUES (?, ?)'
             param = coffeetypes
             result = self.run_query(query, param)
-            logger.info('Coffetypes {} added.'.format('was not' if result else 'was'))
+            logger.info('Coffetype {} added.'.format('was not' if result else 'was'))
 
     def check_if_coffee_types_in_db(self, coffeetypes):
         coffee, price = coffeetypes
         query = 'SELECT * FROM coffeetypes WHERE product = ? AND price = ?'
         param = (coffee, price,)
         result = self.run_query(query, param)
-        logger.info('Coffetypes {} existed.'.format('were' if result else 'were not'))
+        logger.info('Coffetype {}.'.format('exists' if result else 'is not exist'))
         return bool(result)
 
     def fill_table_ingredients(self, ingredients):
@@ -104,14 +104,14 @@ class DataBaseWorkaround(object):
             query = 'INSERT INTO ingredients VALUES(?, ?)'
             param = ingredients
             result = self.run_query(query, param)
-            logger.info('Ingredients {} added.'.format('were not' if result else 'were'))
+            logger.info('Ingredient {} added.'.format('was not' if result else 'was'))
 
     def check_ingredients_in_db(self, ingredients):
         ingredient, price = ingredients
         query = 'SELECT * FROM ingredients WHERE product = ? AND price = ?'
         param = (ingredient, price,)
         result = self.run_query(query, param)
-        logger.info('Ingredients {} existed.'.format('were' if result else 'were not'))
+        logger.info('Ingredient {}.'.format('exists' if result else 'is not exist'))
         return bool(result)
 
     def fill_table_sales(self, user_info):
@@ -120,14 +120,14 @@ class DataBaseWorkaround(object):
             query = 'INSERT INTO sales VALUES (?,?,?)'
             param = (name, 0, 0,)
             result = self.run_query(query, param)
-            logger.info('Values {} added.'.format('were not' if result else 'were'))
+            logger.info('Salesman`s values {} added.'.format('were not' if result else 'were'))
 
     def check_if_salesman_in_db(self, user_info):
         name, position = user_info
         query = 'SELECT * FROM sales WHERE \"Seller name\" = ?'
         param = (name,)
         result = self.run_query(query, param)
-        logger.info('User {} existed.'.format('was' if result else 'was not'))
+        logger.info('User {}.'.format('exists' if result else 'is not exist'))
         return bool(result)
 
     def update_table_sales(self, name, order_list):
