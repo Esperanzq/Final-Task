@@ -2,13 +2,10 @@
 from datetime import datetime
 
 try:
-    import final_parser as pars
     from final_logger import logger
     from final_db import connect as db
 except ImportError as err:
     print ("{}. Check if file exists.".format(err))
-
-parser = pars.create_parser()
 
 try:
     get_input = raw_input
@@ -20,36 +17,35 @@ class Staff(object):
     def __init__(self, name=None, position=None):
         self.name = name
         self.position = position
+
+    def admittance(self):
         if not self.name:
             self.add_name()
         if not self.position:
             self.add_position()
-            self.add_employee_to_db()
-            self.define_position_of_employee()
+        self.add_employee_to_db()
 
-    def add_name(self, name_=parser.name):
-        if not name_:
-            res = get_input("Hello! What is your name?\n").capitalize()
-            self.name = res
-            assert self.name.isalpha(), "Name should consist only of letters"
-            assert 36 > len(self.name) >= 3, "The len of name can`t be less than 3 symbols and more than 36 symbols"
-            return self.add_position()
+    def add_name(self):
+        res = get_input("Hello! What is your name?\n").capitalize()
+        self.name = res
+        assert self.name.isalpha(), "Name should consist only of letters"
+        assert 36 > len(self.name) >= 3, "The len of name can`t be less 3 symbols and more 36 symbols"
+        return self.add_position()
 
-    def add_position(self, position_=parser.position):
-        if not position_:
-            position = get_input("What is your position?\n1.manager 2.salesman\n")
-            if position == '1' or position == "manager":
-                self.position = "manager"
-                logger.info("User {} position {} logged in".format(self.name, self.position))
-                return self.add_employee_to_db()
-            if position == '2' or position == "salesman":
-                self.position = "salesman"
-                logger.info("User {} position {} logged in".format(self.name, self.position))
-                return self.add_employee_to_db()
-            else:
-                print ("There is no such position, choose from available variants")
-                logger.error("There is no such position, choose from available variants")
-                self.add_position()
+    def add_position(self):
+        position = get_input("What is your position?\n1.manager 2.salesman\n")
+        if position == '1' or position == "manager":
+            self.position = "manager"
+            logger.info("User {} position {} logged in".format(self.name, self.position))
+            return self.add_employee_to_db()
+        if position == '2' or position == "salesman":
+            self.position = "salesman"
+            logger.info("User {} position {} logged in".format(self.name, self.position))
+            return self.add_employee_to_db()
+        else:
+            print ("There is no such position, choose from available variants")
+            logger.error("There is no such position, choose from available variants")
+            self.add_position()
 
     def define_position_of_employee(self):
         if self.position == "salesman":
@@ -73,11 +69,11 @@ class Manager(Staff):
         if results in ('1', "yes", "y"):
             db.show_statistic()
             print ("\nExiting to main menu....\n")
-            return Staff()
+            return self.add_name()
         if results in ('2', "no", "n"):
             logger.info("Manager {} logged out".format(self.name))
             print ("Exiting to main menu...\n")
-            return Staff()
+            return self.add_name()
         else:
             logger.info("Wrong choice! Need to press 1 or 2")
             print ("You need to press '1' or '2'")
@@ -101,11 +97,11 @@ class Salesman(Staff):
         if input_ in ('0', "exit"):
             print ("Exiting to main menu...\n")
             logger.info("Salesman {} logged out".format(self.name))
-            Staff()
+            self.add_name()
 
     def make_order(self):
         print (db.show_coffee_types_menu())
-        order = get_input("Select ID number of what do you want to sell\nPress 0 to QUIT\n")
+        order = get_input("Select ID number of what do you want to sell?\nPress 0 to QUIT\n")
         if order in self.coffee_dictionary.keys():
             coffee_type = self.coffee_dictionary[order]
             self.order_list.append(coffee_type)
@@ -113,7 +109,7 @@ class Salesman(Staff):
             self.add_ingredient()
         if order in ('0', 'quit', 'q'):
             print ("Exiting to main menu...")
-            Staff()
+            self.admittance()
 
     def add_ingredient(self):
         question = get_input("Do you want to add sugar, cream or milk?\n1.yes\n2.no\n")
@@ -140,8 +136,8 @@ class Salesman(Staff):
 
     def save_the_sales_details_into_file(self, order_list):
         date = datetime.now()
-        dt = date.strftime("%m.%d.%y_%H_%M_%S")
-        dt2 = date.strftime("%m.%d.%y     %H:%M:%S")
+        dt = date.strftime("%d.%m.%y_%H_%M_%S")
+        dt2 = date.strftime("%d.%m.%y     %H:%M:%S")
         filename = "bill_" + dt
         file_ = open(filename, "a")
         file_.write("CoffeeForMe Shop\n***Your bill***\n")
