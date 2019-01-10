@@ -28,20 +28,14 @@ class DataBaseWorkaround(object):
     def run_query(self, query, param=None):
         msg = 'Execute query: {}, {}'.format(query, param) if param else 'Execute query: {}'.format(query)
         logger.info(msg)
-        try:
-            conn = sqlite3.connect(self.database)
-            with conn:
-                cursor = conn.cursor()
-                if param:
-                    cursor.execute(query, param)
-                else:
-                    cursor.execute(query)
-                result = cursor.fetchall()
+        with self.conn:
+            if param:
+                self.cursor.execute(query, param)
+            else:
+                self.cursor.execute(query)
+            result = self.cursor.fetchall()
             logger.info('Success!')
             return result
-        except Exception as error:
-            logger.exception(error)
-            raise
 
     def create_tables(self):
         """ create a database tables if they are not exist"""
