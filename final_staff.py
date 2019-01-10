@@ -32,7 +32,7 @@ class Staff(object):
             res = get_input("Hello! What is your name?\n").capitalize()
             self.name = res
             assert self.name.isalpha(), "Name should consist only of letters"
-            assert 36 > len(self.name) >= 3, "The len of name can`t be less 3 symbols and more 36 symbols"
+            assert 36 > len(self.name) >= 3, "The len of name can`t be less than 3 symbols and more than 36 symbols"
             return self.add_position()
 
     def add_position(self, position_=parser.position):
@@ -105,7 +105,7 @@ class Salesman(Staff):
 
     def make_order(self):
         print (db.show_coffee_types_menu())
-        order = get_input("Select ID number of what do you want to sell?\nPress 0 to QUIT\n")
+        order = get_input("Select ID number of what do you want to sell\nPress 0 to QUIT\n")
         if order in self.coffee_dictionary.keys():
             coffee_type = self.coffee_dictionary[order]
             self.order_list.append(coffee_type)
