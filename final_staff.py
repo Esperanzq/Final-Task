@@ -44,7 +44,7 @@ class Staff(object):
             return self.add_employee_to_db()
         else:
             print ("There is no such position, choose from available variants")
-            logger.error("There is no such position, choose from available variants")
+            logger.info("There is no such position, choose from available variants")
             self.add_position()
 
     def define_position_of_employee(self):
