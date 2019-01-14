@@ -98,6 +98,9 @@ class Salesman(Staff):
             print ("Exiting to main menu...\n")
             logger.info("Salesman {} logged out".format(self.name))
             self.add_name()
+        else:
+            print ("Wrong choice! Press 1, 2 or 0")
+            self.salesman_menu()
 
     def make_order(self):
         print (db.show_coffee_types_menu())
