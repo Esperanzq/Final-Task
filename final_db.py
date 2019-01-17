@@ -39,7 +39,7 @@ class DataBaseWorkaround(object):
 
     def create_tables(self):
         """ create a database tables if they are not exist"""
-        logger.info('Creating database << {} >>.'.format(self.database))
+        logger.info('Creating database {}.'.format(self.database))
         query1 = 'CREATE TABLE IF NOT EXISTS employees(position TEXT, name TEXT)'
         query2 = 'CREATE TABLE IF NOT EXISTS coffeetypes(product TEXT, price REAL)'
         query3 = 'CREATE TABLE IF NOT EXISTS ingredients(product TEXT, price REAL)'
@@ -48,7 +48,7 @@ class DataBaseWorkaround(object):
 
         for query in (query1, query2, query3, query4):
             result = self.run_query(query)
-        logger.info('Database << {} >> {} created.'.format(self.database, 'was not' if result else 'was'))
+        logger.info('Database " {} " {} created.'.format(self.database, 'was not' if result else 'was'))
         return result
 
     def init_products_tables(self, menu_):
@@ -64,20 +64,21 @@ class DataBaseWorkaround(object):
             query = 'INSERT INTO employees VALUES (?,?)'
             param = user_info
             result = self.run_query(query, param)
-            logger.info('User << {} >> {} created.'.format(user_info[0], 'was not' if result else 'was'))
+            logger.info('User " {} " {} created.'.format(user_info[0], 'was not' if result else 'was'))
             return result
 
     def check_if_employee_in_db(self, user_info):
+        """Check if employee exists in database"""
         position, name = user_info
         query = 'SELECT * FROM employees WHERE position = ? AND name = ?'
         param = position, name,
         result = self.run_query(query, param)
-        logger.info('User << {} >> position << {} >> {}.'.format(user_info[0], user_info[1],
-                                                                 'exists' if result else 'does not exist'))
+        logger.info('User " {} " position " {} " {}.'.format(user_info[0],
+                                                             user_info[1], 'exists' if result else 'does not exist'))
         return bool(result)
 
     def fill_table_coffeetypes(self, coffeetypes):
-        """ filling table coffeetypes"""
+        """ Filling table coffeetypes"""
         if not self.check_if_coffee_types_in_db(coffeetypes):
             query = 'INSERT INTO coffeetypes VALUES (?, ?)'
             param = coffeetypes
@@ -85,6 +86,7 @@ class DataBaseWorkaround(object):
             logger.info('Coffetype {} added.'.format('was not' if result else 'was'))
 
     def check_if_coffee_types_in_db(self, coffeetypes):
+        """Check if coffeetypes present in database"""
         coffee, price = coffeetypes
         query = 'SELECT * FROM coffeetypes WHERE product = ? AND price = ?'
         param = coffee, price,
@@ -93,6 +95,7 @@ class DataBaseWorkaround(object):
         return bool(result)
 
     def fill_table_ingredients(self, ingredients):
+        """Filling table ingredients"""
         if not self.check_ingredients_in_db(ingredients):
             query = 'INSERT INTO ingredients VALUES(?, ?)'
             param = ingredients
@@ -100,6 +103,7 @@ class DataBaseWorkaround(object):
             logger.info('Ingredient {} added.'.format('was not' if result else 'was'))
 
     def check_ingredients_in_db(self, ingredients):
+        """Check if ingredients present in database"""
         ingredient, price = ingredients
         query = 'SELECT * FROM ingredients WHERE product = ? AND price = ?'
         param = ingredient, price,
@@ -108,6 +112,7 @@ class DataBaseWorkaround(object):
         return bool(result)
 
     def fill_table_sales(self, user_info):
+        """Filling table sales"""
         name, position = user_info
         if not self.check_if_salesman_in_db(user_info) and position == 'salesman':
             query = 'INSERT INTO sales VALUES (?,?,?)'
@@ -116,6 +121,7 @@ class DataBaseWorkaround(object):
             logger.info('Salesman`s values {} added.'.format('were not' if result else 'were'))
 
     def check_if_salesman_in_db(self, user_info):
+        """Check if salesman exists in database"""
         name, position = user_info
         query = 'SELECT * FROM sales WHERE \"Seller name\" = ?'
         param = name,
@@ -124,6 +130,7 @@ class DataBaseWorkaround(object):
         return bool(result)
 
     def update_table_sales(self, name, order_list):
+        """Update data in the table sales"""
         price = self.get_overall_price(order_list)
         query = 'SELECT \"Number of sales\", \"Total value (BYN)\" FROM sales WHERE \"Seller name\" = ?'
         param = name,
@@ -139,6 +146,7 @@ class DataBaseWorkaround(object):
         self.conn.commit()
 
     def add_employee(self, user_info):
+        """Add employee to system"""
         if self.check_if_employee_in_db(user_info):
             print('You were logged as {} position {}\n'.format(user_info[0], user_info[1]))
         else:
@@ -164,14 +172,16 @@ class DataBaseWorkaround(object):
         return [Products(rowid, name, price) for rowid, name, price in ingredients_menu]
 
     def show_coffee_types_menu(self):
+        """Shows table with coffeetypes"""
         sourse = self.coffee_types_menu
         menu_ = [coffee.product_info() for coffee in sourse]
-        t = PrettyTable(['ID', 'COFFEE TYPES', 'PRICE'])
+        table = PrettyTable(['ID', 'COFFEE TYPES', 'PRICE'])
         for number, ctype, price in menu_:
-            t.add_row([number, ctype, price])
-        return t
+            table.add_row([number, ctype, price])
+        return table
 
     def show_ingredients_menu(self):
+        """Shows table with ingredients"""
         sourse = self.ingredients_menu
         menu_ = [ingredient.product_info() for ingredient in sourse]
         t = PrettyTable(['ID', 'INGREDIENT', 'PRICE'])
@@ -186,6 +196,7 @@ class DataBaseWorkaround(object):
         return {str(ingredient.rowid): ingredient for ingredient in self.ingredients_menu}
 
     def show_total_sales(self):
+        """Shows total amount of sales of all salesmans"""
         query = 'SELECT SUM(\"Number of sales\") FROM sales'
         self.cursor.execute(query)
         logger.info('Execute query: {}'.format(query))
@@ -194,6 +205,7 @@ class DataBaseWorkaround(object):
             return int(element)
 
     def show_total_profit(self):
+        """Shows total profit of all salesmans"""
         query = 'SELECT SUM(\"Total value (BYN)\") FROM sales'
         self.cursor.execute(query)
         logger.info('Execute query: {}'.format(query))
@@ -202,6 +214,7 @@ class DataBaseWorkaround(object):
             return element
 
     def show_statistic(self):
+        """Show detailed statistic of sales"""
         query = 'SELECT * FROM sales'
         self.cursor.execute(query)
         logger.info('Execute query: {}'.format(query))
@@ -213,6 +226,7 @@ class DataBaseWorkaround(object):
 
     @staticmethod
     def get_overall_price(order):
+        """Get overall order price"""
         return sum(product.price for product in order)
 
 
@@ -220,4 +234,5 @@ connect = DataBaseWorkaround()
 menu = Menu()
 connect.create_tables()
 connect.init_products_tables(menu)
+
 
