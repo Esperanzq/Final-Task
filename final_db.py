@@ -191,7 +191,7 @@ class DataBaseWorkaround(object):
         logger.info('Execute query: {}'.format(query))
         result = self.cursor.fetchone()
         for element in result:
-            return element
+            return int(element)
 
     def show_total_profit(self):
         query = 'SELECT SUM(\"Total value (BYN)\") FROM sales'
@@ -207,7 +207,7 @@ class DataBaseWorkaround(object):
         logger.info('Execute query: {}'.format(query))
         t = PrettyTable(['Seller name', 'Number of sales', 'Total value(BYN)'])
         for name, sales, value in self.cursor.fetchall():
-            t.add_row([name, sales, value])
+            t.add_row([name, int(sales), value])
         t.add_row(['Total:', self.show_total_sales(), self.show_total_profit()])
         print (t)
 
