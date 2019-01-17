@@ -15,6 +15,7 @@ except NameError:
 
 class Staff(object):
     def __init__(self, name=None, position=None):
+        """Constructor for Staff object"""
         self.name = name
         self.position = position
 
@@ -26,6 +27,7 @@ class Staff(object):
         self.add_employee_to_db()
 
     def add_name(self):
+        """Method which asks to enter user name"""
         res = get_input("Hello! What is your name?\n").capitalize()
         self.name = res
         assert self.name.isalpha(), "Name should consist only of letters"
@@ -33,6 +35,7 @@ class Staff(object):
         return self.add_position()
 
     def add_position(self):
+        """Method which asks to enter user position"""
         position = get_input("What is your position?\n1.manager 2.salesman\n")
         if position == '1' or position == "manager":
             self.position = "manager"
@@ -44,16 +47,18 @@ class Staff(object):
             return self.add_employee_to_db()
         else:
             print ("There is no such position, choose from available variants")
-            logger.info("There is no such position, choose from available variants")
+            logger.error("There is no such position, choose from available variants")
             self.add_position()
 
     def define_position_of_employee(self):
+        """Defines to which class assign employee"""
         if self.position == "salesman":
             return Salesman(name=self.name, position=self.position)
         if self.position == "manager":
             return Manager(name=self.name, position=self.position)
 
     def add_employee_to_db(self):
+        """Adds employee to db"""
         user_info = (self.name, self.position)
         db.add_employee(user_info)
         return self.define_position_of_employee()
@@ -61,10 +66,12 @@ class Staff(object):
 
 class Manager(Staff):
     def __init__(self, name, position):
+        """Constructor for Managers"""
         super(Manager, self).__init__(name, position)
         self.show_statistic()
 
     def show_statistic(self):
+        """Show sales statistic to manager"""
         results = get_input("Do you want to see statistic?\n1.Yes 2.No\n")
         if results in ('1', "yes", "y"):
             db.show_statistic()
@@ -82,6 +89,7 @@ class Manager(Staff):
 
 class Salesman(Staff):
     def __init__(self, name, position):
+        """Constructor for Salesmans"""
         super(Salesman, self).__init__(name, position)
         self.order_list = []
         self.coffee_dictionary = db.coffee_dict()
@@ -89,6 +97,7 @@ class Salesman(Staff):
         self.salesman_menu()
 
     def salesman_menu(self):
+        """Shows main salesman's menu"""
         input_ = get_input("What do you want to do?\n 1.See prices\n 2.Make order\n 0.exit\n")
         if input_ in ('1', "see prices"):
             self.get_price()
@@ -103,6 +112,7 @@ class Salesman(Staff):
             self.salesman_menu()
 
     def make_order(self):
+        """Allows to make order"""
         print (db.show_coffee_types_menu())
         order = get_input("Select ID number of what do you want to sell?\nPress 0 to QUIT\n")
         if order in self.coffee_dictionary.keys():
@@ -115,6 +125,7 @@ class Salesman(Staff):
             self.admittance()
 
     def add_ingredient(self):
+        """Allows to add ingredient to order"""
         question = get_input("Do you want to add sugar, cream or milk?\n1.yes\n2.no\n")
         if question in ('1', "yes", "y"):
             print (db.show_ingredients_menu())
@@ -131,6 +142,7 @@ class Salesman(Staff):
             self.save_sales_details_to_db()
 
     def get_price(self):
+        """Shows prices of all products of the company"""
         print ("\nCoffeeTypes prices:\n")
         print (db.show_coffee_types_menu())
         print ("\nIngredient prices:\n")
@@ -138,6 +150,7 @@ class Salesman(Staff):
         self.salesman_menu()
 
     def save_the_sales_details_into_file(self, order_list):
+        """Saves order into file"""
         date = datetime.now()
         dt = date.strftime("%d.%m.%y_%H_%M_%S")
         dt2 = date.strftime("%d.%m.%y     %H:%M:%S")
@@ -153,10 +166,12 @@ class Salesman(Staff):
             print(file_.read())
 
     def save_sales_details_to_db(self):
+        """Save sale details into db"""
         db.update_table_sales(self.name, self.order_list)
         return self.bill_request(self.order_list)
 
     def bill_request(self, order_list):
+        """Shows final bill"""
         print("Printing bill...\n")
         self.save_the_sales_details_into_file(order_list)
         self.order_list = []
